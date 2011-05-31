@@ -3,15 +3,5 @@
   "version": "0.0.1",
   "dependencies": {
     "express": "2.2.0"
-  },
-  "devDependencies": {},
-  "engines": {
-    "node": "*"
-  },
-  "author": "Mart",
-  "description": "nothing",
-  "repository": {
-    "type": "git",
-    "url": "/Volumes/Machintosh\\ HD/Users/marten/Dropbox/node-test"
   }
 }
