@@ -42,7 +42,7 @@ app.post('/video', function(req, res, next) {
       // send file to amazon
       fs.readFile(files.video.path, function(err, buf) {
         console.log("Send file to amazon");
-          path_to_s3 =  files.video.path;
+          path_to_s3 =  querystring.escape(files.video.filename);
           console.log("path_to_s3 %s", path_to_s3);
         var amazon_req = client.put(path_to_s3, {
           'Content-Length': buf.length,
