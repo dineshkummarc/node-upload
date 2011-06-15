@@ -49,7 +49,6 @@ app.post('/video', function(req, res, next) {
           'Content-Type': 'text/plain'
         });
 
-        fs.rename(files.video.path, "./public/" + files.video.filename);
         res.redirect('/success/'+ querystring.escape(path_to_s3));
 
 
