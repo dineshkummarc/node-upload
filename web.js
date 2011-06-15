@@ -8,7 +8,7 @@ var formidable = require('formidable');
 var fs = require('fs');
 
 var app = express.createServer();
-
+app.use(express.static(__dirname + '/public'));
 app.get('/', function(req, res){
     res.redirect('/demo-form');
 })
@@ -24,9 +24,9 @@ app.post('/video', function(req, res, next) {
 		if (err) {
 			next(err);
 		} else {
-
 			console.log('\nuploaded %s to %s', files.video.filename, files.video.path);
-			res.redirect('back');
+			fs.rename(files.video.path,"./public/" + files.video.filename);
+			res.redirect(files.video.filename);
 		}
 	});
 
