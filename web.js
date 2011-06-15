@@ -1,12 +1,43 @@
+/**
+ * Module dependencies.
+ */
+
 var express = require('express');
+var formidable = require('formidable');
 
-var app = express.createServer(express.logger());
+var fs = require('fs');
 
-app.get('/', function(request, response) {
-  response.send('Hello World!');
+var app = express.createServer();
+
+app.get('/', function(req, res){
+    res.redirect('/demo-form');
+})
+
+app.get('/demo-form', function(req, res) {
+	res.send('<form action="/video" method="post" enctype="multipart/form-data">' + '<p>Image: <input type="file" name="video" /></p>' + '<p><input type="submit" value="Upload" /></p>' + '</form>');
 });
 
-var port = process.env.PORT || 3000;
-console.log("Listening on " + port);
+app.post('/video', function(req, res, next) {
 
-app.listen(port);
+	var form = new formidable.IncomingForm();
+	form.parse(req, function(err, fields, files) {
+		if (err) {
+			next(err);
+		} else {
+
+			console.log('\nuploaded %s to %s', files.video.filename, files.video.path);
+			res.redirect('back');
+		}
+	});
+
+	// We can add listeners for several form
+	// events such as "progress"
+	form.on('progress', function(bytesReceived, bytesExpected) {
+		var percent = (bytesReceived / bytesExpected * 100) | 0;
+		console.log("Got %s of %s bytes", bytesReceived, bytesExpected);
+	});
+
+});
+
+app.listen(3000);
+console.log('Express app started on port 3000');
