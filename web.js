@@ -39,5 +39,5 @@ app.post('/video', function(req, res, next) {
 
 });
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 console.log('Express app started on port 3000');
