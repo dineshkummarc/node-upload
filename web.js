@@ -6,6 +6,7 @@ var express = require('express');
 var formidable = require('formidable');
 var fs = require('fs');
 var knox = require('knox');
+var querystring = require('querystring');
 
 var client = knox.createClient({
   key: 'AKIAJBLFFICH3KAG7HJQ',
@@ -18,7 +19,12 @@ var app = express.createServer();
 app.use(express.static(__dirname + '/public'));
 app.get('/', function(req, res) {
   res.redirect('/demo-form');
-})
+});
+
+app.get('/success/:file', function(req, res) {
+    console.dir(req.params)
+    res.send("<p>File uploaded to " + req.params.file + "</p>");
+});
 
 app.get('/demo-form', function(req, res) {
   res.send('<form action="/video" method="post" enctype="multipart/form-data">' + '<p>Image: <input type="file" name="video" /></p>' + '<p><input type="submit" value="Upload" /></p>' + '</form>');
@@ -44,8 +50,7 @@ app.post('/video', function(req, res, next) {
         });
 
         fs.rename(files.video.path, "./public/" + files.video.filename);
-          console.log("Redirect user with path to s3 %s", path_to_s3);
-          res.redirect(files.video.filename);
+        res.redirect('/success/'+ querystring.escape(path_to_s3));
 
 
         amazon_req.on('response', function(amazon_res) {
