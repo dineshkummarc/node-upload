@@ -59,7 +59,11 @@ app.post('/video', function(req, res, next) {
 
           if (200 == amazon_res.statusCode) {
             console.log('saved to amazon on: %s', amazon_req.url);
-                    }
+		}
+        });
+
+        amazon_req.on('data', function(chunk) {
+          console.log('amazon on data: %s', chunk);
         });
 
         amazon_req.on('error', function(err) {
