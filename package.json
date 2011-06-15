@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "express": "2.2.0",
-	"formidable": "1.0.2"
-	"knox": "0.0.7"
+	"formidable": "1.0.2",
+	"knox": "0.0.5"
   }
 }
