@@ -7,6 +7,9 @@ var formidable = require('formidable');
 var fs = require('fs');
 var knox = require('knox');
 var querystring = require('querystring');
+var http = require('http'),
+    io = require('socket.io') // for npm, otherwise use require('./path/to/socket.io')
+
 
 var client = knox.createClient({
   key: 'AKIAJBLFFICH3KAG7HJQ',
@@ -14,12 +17,21 @@ var client = knox.createClient({
   bucket: 'node-test'
 
 });
+var ws_client;
 
 var app = express.createServer();
 app.use(express.static(__dirname + '/public'));
+app.set('view options', {
+  layout: false
+});
 app.get('/', function(req, res) {
   res.redirect('/demo-form');
 });
+
+app.get("/what", function(req, res){
+  res.redirect('/tjena.html');
+});
+
 
 app.get('/success/:file', function(req, res) {
     console.dir(req.params)
@@ -27,7 +39,7 @@ app.get('/success/:file', function(req, res) {
 });
 
 app.get('/demo-form', function(req, res) {
-  res.send('<form action="/video" method="post" enctype="multipart/form-data">' + '<p>Image: <input type="file" name="video" /></p>' + '<p><input type="submit" value="Upload" /></p>' + '</form>');
+	res.render('form.html');
 });
 
 app.post('/video', function(req, res, next) {
@@ -49,7 +61,7 @@ app.post('/video', function(req, res, next) {
           'Content-Type': 'text/plain'
         });
 
-        res.redirect('/success/'+ querystring.escape(path_to_s3));
+        // res.redirect('/success/'+ querystring.escape(path_to_s3));
 
 
         amazon_req.on('response', function(amazon_res) {
@@ -77,9 +89,24 @@ app.post('/video', function(req, res, next) {
   // We can add listeners for several form
   // events such as "progress"
   form.on('progress', function(bytesReceived, bytesExpected) {
+	console.log("bytesReceived: ", bytesReceived);
     var percent = (bytesReceived / bytesExpected * 100) | 0;
+	ws_client.send("bytesReceived: " + percent); ;
   });
 
+});
+
+// socket.io
+var socket = io.listen(app);
+socket.on('connection', function(client){
+	ws_client = client;
+	// new client is here!
+	console.log('new connection!');
+	client.on('message', function(msg){
+		console.log('sent message: %s', msg)
+		client.send("wheeeeee") ;
+	});
+	client.on('disconnect', function(){ console.log('disconnect') });
 });
 
 app.listen(process.env.PORT || 3000);
